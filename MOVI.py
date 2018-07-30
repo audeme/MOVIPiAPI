@@ -1,0 +1,245 @@
+#********************************************************************
+# This is a library for the Audeme MOVI Voice Control Shield
+# ----> http://www.audeme.com/MOVI/
+# This code is inspired and maintained by Audeme but open to change
+# and organic development on GITHUB:
+# ----> https://github.com/audeme/MOVIPiAPI
+# Written by Bertrand Irissou and Gerald Friedland for Audeme LLC.
+# Contact: fractor@audeme.com
+# BSD license, all text above must be included in any redistribution.
+#********************************************************************
+
+import serial
+import time
+
+# 07/27/18 - v0.1 Initial version
+#
+#
+
+# Equivalent of #define in C++
+
+API_VERSION      = 1.12
+ARDUINO_BAUDRATE = 9600
+SHIELD_IDLE      = 0
+BEGIN_LISTEN     = -140
+END_LISTEN       = -141
+BEGIN_SAY        = -150
+END_SAY          = -151
+CALLSIGN_DETECTED= -200
+RAW_WORDS        = -201
+PASSWORD_ACCEPT  = -204
+PASSWORD_REJECT  = -404
+NOISE_ALARM      = -530
+SILENCE          = -501
+UNKNOWN_SENTENCE = -502
+
+MALE_VOICE       = False
+FEMALE_VOICE     = True
+
+SYNTH_ESPEAK     = 0
+SYNTH_PICO       = 1
+
+class MOVI():
+
+    def __init__(self):
+        self.__hardwareversion = 0
+        self.__firmwareversion = 0
+        
+        self.__hardwareversion = 0     # stores hardware version
+        self.__firmwareversion = 0     # stores firmware version
+        self.__shieldinit      = 0     # stores the init state of the MOVI object
+        self.__callsigntrainok = True  # makes sure callsign is only called once
+        self.__debug           = 0     # debug allows serial monitor interfacing
+        self.__intraining      = False # determines if training is ok
+        self.__firstsentence   = True  # determines if addSentence() has been called
+        self.__response        = ""    # stores the stream of the last serial com result
+        self.__result          = ""    # stores the last result of getResult()
+
+    def init(self,waitformovi = 1, serialport='/dev/serial0'):
+        self.__response        = ""    
+        self.__result          = ""    
+        self.__ser = serial.Serial(
+            port=serialport,
+            parity=serial.PARITY_NONE, 
+            stopbits=serial.STOPBITS_ONE, 
+            bytesize=serial.EIGHTBITS, 
+            baudrate = 9600, 
+            timeout=0.1 )
+        
+        if self.__ser.isOpen()==False:
+            try:
+                self.__ser.open()
+            except:
+                print ("Error communicating with serial port")
+                exit()
+
+        self.__shieldinit = 1
+        while waitformovi and (self.isReady()==False):
+            time.sleep(0.01)
+
+        while True:
+            self.__ser.write("INIT\n")
+            time.sleep(0.01)
+            response=self.getShieldResponse()
+            if response.find('@') > -1:
+                break
+        self.__firmwareversion = float(response[response.find(' ')+1:response.find('@')])
+        self.__hardwareversion = float(response[response.find('@')+1:])
+
+    def poll(self):
+        self.__firstsentence = False # Assume loop() and we can't train in loop
+        self.__intraining    = False
+        self.getShieldResponse()
+        if "MOVIEvent[" in self.__response:
+            start= self.__response.find('[')
+            stop = self.__response.find(']')
+            # eventno = int(self.__response[start+1:stop])
+            eventno = int(self.__response[self.__response.find('[')+1 : 
+                                          self.__response.find(']')])
+            self.__result = self.__response[self.__response.find(' ')+1:]
+
+            if (eventno < 100):  # user read-only event
+                #self.__response = ""
+                return(SHIELD_IDLE)
+            if (eventno == 202):  # sentence recognized
+                self.__result = self.__response[self.__response.find('#')+1:]
+                #self.__response = ""
+                return(int(self.__result))
+            #if (eventno == 203):  # password event
+                # TODO
+            #self.__response = ""
+            return(-eventno)
+        else:
+            return (SHIELD_IDLE)
+
+    def getResult(self):
+        return(self.__result)
+
+    def getResponse(self):
+        return(self.__response)
+
+    def getShieldResponse(self):
+        # Simplified version
+        if (self.__shieldinit == 0):
+            self.init()
+        else:
+            self.__response = self.__ser.readline()
+        return(self.__response)
+
+    def sendCommand(self, command):
+        # TODO - Implement firstsentence OR intraining cases
+        self.__ser.write(command + '\n')
+        return(self.getShieldResponse())
+
+    def isReady(self):
+        if self.__shieldinit == 100:
+            return(True)
+        if self.__shieldinit == 0:
+            self.init()
+        self.__ser.write("PING\n")
+        if "PONG" in self.getShieldResponse():
+            self.__shieldinit = 100
+            return(True)
+        self.__shieldinit=1
+        return(False)
+
+    def factoryDefault(self):
+        self.sendCommand("FACTORY")
+
+    def stopDialog(self):
+        self.sendCommand("STOP")
+
+    def restartDialog(self):
+        self.sendCommand("RESTART")
+    
+    def say(self, sentence):
+        self.sendCommand("SAY " + sentence )
+    
+    def pause(self):
+        self.sendCommand("PAUSE")
+    
+    def unpause(self):
+        self.sendCommand("UNPAUSE")
+    
+    def finish(self):
+        self.sendCommand("FINISH")
+    
+    def play(self, filename):
+        self.sendCommand("SAY " + filename)
+    
+    def abort(self):
+        self.sendCommand("ABORT")
+    
+    def setSynthesizer(self, synth, commandline=""):
+        if (synth == SYNTH_PICO):
+            self.sendCommand("SETSYNTH PICO "  + commandline)
+        else:
+            self.sendCommand("SETSYNTH ESPEAK" + commandline)
+
+    def password(self, question, passkey):
+        print ("password: not implemented yet - TODO")
+
+    def ask(self, question=""):
+        if question != "":
+            self.say(question)
+        self.sendCommand("ASK")
+
+    def callSign(self, callsign):
+        if (self.__callsigntrainok):
+            self.sendCommand("CALLSIGN " + callsign + " callsign")
+            self.__callsigntrainok = False
+            
+    def responses(self, on):
+        if (on == True):
+            self.sendCommand("RESPONSES ON")
+        else:
+            self.sendCommand("RESPONSES OFF")
+
+    def welcomeMessage(self, on):
+        if (on == True):
+            self.sendCommand("WELCOMEMESSAGE ON")
+        else:
+            self.sendCommand("WELCOMEMESSAGE OFF")
+
+    def beeps(self, on):
+        if (on == True):
+            self.sendCommand("BEEPS ON")
+        else:
+            self.sendCommand("BEPPS OFF")
+
+    def setVoiceGender(self, female):
+        if (female == True):
+            self.sendCommand("FEMALE")
+        else:
+            self.sendCommand("MALE")
+
+    def setVolume(self, volume):
+        self.sendCommand("VOLUME "+ str(volume))
+        
+    def setThreshold(self, threshold):
+        self.sendCommand("THRESHOLD "+ str(threshold))
+        
+    def getFirmwareVersion(self):
+        return(self.__firmwareversion)
+        
+    def getAPIVersion(self):
+        return(API_VERSION)
+        
+    def getHardwareVersion(self):
+        return(self.__hardwareversion)
+
+    def addSentence(self, sentence):
+        if self.__firstsentence == True :
+            self.__intraining = self.sendCommand("NEWSENTENCES " + "210")
+            self.__firstsentence == False
+        if (self.__intraining == False):
+            return(False)
+        self.__intraining=self.sendCommand("ADDSENTENCE " + sentence + " 211")
+        return (self.__intraining)
+
+    def train(self):
+        if (self.__intraining == False):
+            return(False)
+        self.sendCommand("TRAINSENTENCES trained")
+        self.__intraining = False
+        return (True)
