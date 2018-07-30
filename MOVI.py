@@ -13,7 +13,7 @@ import serial
 import time
 
 # 07/27/18 - v0.1 Initial version
-#
+# 07/29/18 - v0.2 fixed various bugs, added password functionality, added controlled sendcommand functionality and uses it during initialization and training 
 #
 
 # Equivalent of #define in C++
@@ -42,9 +42,7 @@ SYNTH_PICO       = 1
 class MOVI():
 
     def __init__(self):
-        self.__hardwareversion = 0
-        self.__firmwareversion = 0
-        
+	self.__passstring      = ""    # stores password challenge
         self.__hardwareversion = 0     # stores hardware version
         self.__firmwareversion = 0     # stores firmware version
         self.__shieldinit      = 0     # stores the init state of the MOVI object
@@ -56,7 +54,7 @@ class MOVI():
         self.__result          = ""    # stores the last result of getResult()
 
     def init(self,waitformovi = 1, serialport='/dev/serial0'):
-        self.__response        = ""    
+	self.__response        = ""    
         self.__result          = ""    
         self.__ser = serial.Serial(
             port=serialport,
@@ -75,11 +73,11 @@ class MOVI():
 
         self.__shieldinit = 1
         while waitformovi and (self.isReady()==False):
-            time.sleep(0.01)
+            time.sleep(0.1) # This is a longer sleep than Arduino but the CPU is faster too. 
 
         while True:
             self.__ser.write("INIT\n")
-            time.sleep(0.01)
+            time.sleep(0.1)
             response=self.getShieldResponse()
             if response.find('@') > -1:
                 break
@@ -105,8 +103,14 @@ class MOVI():
                 self.__result = self.__response[self.__response.find('#')+1:]
                 #self.__response = ""
                 return(int(self.__result))
-            #if (eventno == 203):  # password event
-                # TODO
+            if (eventno == 203):  # password event
+                    self.__response=""
+                    self.__result=self.__result.strip()
+                    if (self.__passstring.equals(self.__result)):
+                        return PASSWORD_ACCEPT
+                    else:
+                        return PASSWORD_REJECT;
+
             #self.__response = ""
             return(-eventno)
         else:
@@ -127,9 +131,23 @@ class MOVI():
         return(self.__response)
 
     def sendCommand(self, command):
+	if (self.__firstsentence or self.__intraining):
+		sendCommand(command,"]")  # Use controlled sendCommand	
         # TODO - Implement firstsentence OR intraining cases
         self.__ser.write(command + '\n')
         return(self.getShieldResponse())
+
+    def sendCommand(self, command, okresponse):
+        if (self.isready()):
+		self.__ser.write(command + '\n')	
+		if (okresponse==""): 
+			return True
+		if (self.getShieldResponse().find(okresponse)>=0):
+			return True
+		else:
+			return False
+	else:
+		return False 
 
     def isReady(self):
         if self.__shieldinit == 100:
@@ -176,17 +194,19 @@ class MOVI():
         else:
             self.sendCommand("SETSYNTH ESPEAK" + commandline)
 
-    def password(self, question, passkey):
-        print ("password: not implemented yet - TODO")
-
     def ask(self, question=""):
         if question != "":
             self.say(question)
         self.sendCommand("ASK")
-
+    
+    def password(self, question, passkey):
+	self.__passstring=passkey.strip().upper()
+	self.say(question)
+	self.sendCommand("PASSWORD")
+	
     def callSign(self, callsign):
         if (self.__callsigntrainok):
-            self.sendCommand("CALLSIGN " + callsign + " callsign")
+            self.sendCommand("CALLSIGN " + callsign, "callsign")
             self.__callsigntrainok = False
             
     def responses(self, on):
@@ -230,16 +250,16 @@ class MOVI():
 
     def addSentence(self, sentence):
         if self.__firstsentence == True :
-            self.__intraining = self.sendCommand("NEWSENTENCES " + "210")
+            self.__intraining = self.sendCommand("NEWSENTENCES ", "210")
             self.__firstsentence == False
         if (self.__intraining == False):
             return(False)
-        self.__intraining=self.sendCommand("ADDSENTENCE " + sentence + " 211")
+        self.__intraining=self.sendCommand("ADDSENTENCE " + sentence, "211")
         return (self.__intraining)
 
     def train(self):
         if (self.__intraining == False):
             return(False)
-        self.sendCommand("TRAINSENTENCES trained")
+        self.sendCommand("TRAINSENTENCES", "trained")
         self.__intraining = False
         return (True)
