@@ -138,7 +138,7 @@ class MOVI():
         return(self.getShieldResponse())
 
     def sendCommand(self, command, okresponse):
-        if (self.isready()):
+        if (self.isReady()):
 		self.__ser.write(command + '\n')	
 		if (okresponse==""): 
 			return True
@@ -249,9 +249,9 @@ class MOVI():
         return(self.__hardwareversion)
 
     def addSentence(self, sentence):
-        if self.__firstsentence == True :
+        if (self.__firstsentence == True):
             self.__intraining = self.sendCommand("NEWSENTENCES ", "210")
-            self.__firstsentence == False
+            self.__firstsentence = False
         if (self.__intraining == False):
             return(False)
         self.__intraining=self.sendCommand("ADDSENTENCE " + sentence, "211")
