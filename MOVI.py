@@ -14,7 +14,7 @@ import time
 
 # 07/27/18 - v0.1 Initial version
 # 07/29/18 - v0.2 fixed various bugs, added password functionality, added controlled sendcommand functionality and uses it during initialization and training 
-#
+# 10/20/19 - v0.3 fixed more bugs
 
 # Equivalent of #define in C++
 
@@ -130,14 +130,20 @@ class MOVI():
             self.__response = self.__ser.readline()
         return(self.__response)
 
-    def sendCommand(self, command):
+    def sendCommand(self, command, okresponse=None):
+	if (okresponse==None):
+		return(self.__sendCommand(command))
+	else:
+		return(self.__sendctrldCommand(command,okresponse))
+		
+    def __sendCommand(self, command):
 	if (self.__firstsentence or self.__intraining):
-		sendCommand(command,"]")  # Use controlled sendCommand	
+		return(__sendctrldCommand(command,"]"))  # Use controlled sendCommand	
         # TODO - Implement firstsentence OR intraining cases
         self.__ser.write(command + '\n')
         return(self.getShieldResponse())
 
-    def sendCommand(self, command, okresponse):
+    def __sendctrldCommand(self, command, okresponse):
         if (self.isReady()):
 		self.__ser.write(command + '\n')	
 		if (okresponse==""): 
@@ -171,7 +177,7 @@ class MOVI():
         self.sendCommand("RESTART")
     
     def say(self, sentence):
-        self.sendCommand("SAY " + sentence )
+        self.sendCommand("SAY " + sentence)
     
     def pause(self):
         self.sendCommand("PAUSE")
