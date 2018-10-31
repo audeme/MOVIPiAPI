@@ -102,7 +102,7 @@ class MOVI():
             if (eventno == 202):  # sentence recognized
                 self.__result = self.__response[self.__response.find('#')+1:]
                 #self.__response = ""
-                return(int(self.__result))
+                return(int(self.__result)+1)
             if (eventno == 203):  # password event
                     self.__response=""
                     self.__result=self.__result.strip()
@@ -231,7 +231,7 @@ class MOVI():
         if (on == True):
             self.sendCommand("BEEPS ON")
         else:
-            self.sendCommand("BEPPS OFF")
+            self.sendCommand("BEEPS OFF")
 
     def setVoiceGender(self, female):
         if (female == True):
