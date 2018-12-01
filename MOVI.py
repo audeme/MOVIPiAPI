@@ -14,11 +14,13 @@ import time
 
 # 07/27/18 - v0.1 Initial version
 # 07/29/18 - v0.2 fixed various bugs, added password functionality, added controlled sendcommand functionality and uses it during initialization and training 
-# 10/20/19 - v0.3 fixed more bugs
+# 10/20/18 - v0.3 fixed more bugs
+# 11/20/18 - v0.4 more fixes
+
 
 # Equivalent of #define in C++
 
-API_VERSION      = 1.12
+API_VERSION      = 1.20
 ARDUINO_BAUDRATE = 9600
 SHIELD_IDLE      = 0
 BEGIN_LISTEN     = -140
@@ -198,7 +200,7 @@ class MOVI():
         if (synth == SYNTH_PICO):
             self.sendCommand("SETSYNTH PICO "  + commandline)
         else:
-            self.sendCommand("SETSYNTH ESPEAK" + commandline)
+            self.sendCommand("SETSYNTH ESPEAK " + commandline)
 
     def ask(self, question=""):
         if question != "":
