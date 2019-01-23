@@ -38,6 +38,14 @@ out is to do an: ``` stty -a -F <devicefile> ``` where devicefile is
 one of `/dev/ttyAMA0`, `/dev/serial0`, `/dev/ttyS0`, or
 `/dev/serial1`. The one with the lowest number that doesn't return an
 error should be used.
+1. You'll need setuptools for the installation.
+   ```
+   sudo apt-get install python3-setuptools
+   ```
+   or for python2
+   ```
+   sudo apt-get install python-setuptools
+   ```
 1. From this directory call `python3 setup.py install` or better yet
    install it into your `venv`.
 1. Browse through the examples directory and play around with them.
