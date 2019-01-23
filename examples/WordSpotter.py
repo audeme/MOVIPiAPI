@@ -22,7 +22,7 @@
 # IMPORTANT: Use a power supply that's at least 2A for the Raspberry Pi
 #
 
-from MOVI import *
+from movi import MOVI
 
 # Keyword in UPPERCASE
 KEYWORD = "computer"

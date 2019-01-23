@@ -26,7 +26,7 @@
 
 import RPi.GPIO as GPIO
 import time
-from MOVI import *
+from movi import MOVI
 
 ############################################
 # Setup GPIO Pin 13 as Ouput to control LED

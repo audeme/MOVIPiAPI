@@ -22,7 +22,7 @@
 # IMPORTANT: Use a power supply that's at least 2A for the Raspberry Pi
 #
 
-from MOVI import *
+from movi import MOVI
 import urllib2
 import json
 import sys

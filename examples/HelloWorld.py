@@ -9,7 +9,7 @@
 # BSD license, all text above must be included in any redistribution.
 #********************************************************************
 
-from MOVI import *
+from movi import MOVI
 
 mymovi = MOVI()
 mymovi.init(serialport='/dev/serial0')
