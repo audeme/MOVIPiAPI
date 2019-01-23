@@ -1,7 +1,7 @@
 #! /usr/bin/env python2
 
 #********************************************************************
-# This is an example of the use of the Raspberry Pi library for MOVI 
+# This is an example of the use of the Raspberry Pi library for MOVI
 # ----> http://www.audeme.com/MOVI/
 # This code is inspired and maintained by Audeme but open to change
 # and organic development on GITHUB:
@@ -20,13 +20,15 @@
 # MOVI + Raspberry PI adapter
 # Connect speaker to MOVI.
 # IMPORTANT: Use a power supply that's at least 2A for the Raspberry Pi
-# 
+#
 
 from MOVI import *
-import urllib2, json, sys
+import urllib2
+import json
+import sys
 
 ############################################
-### Setup MOVI
+# Setup MOVI
 ############################################
 
 recognizer = MOVI()
@@ -39,7 +41,7 @@ recognizer.addSentence("do nothing")                   # Sentence #3
 recognizer.train()
 
 # Uncomment and set to a higher value if you have a noisy environment
-# recognizer.setThreshhold(5)   
+# recognizer.setThreshhold(5)
 
 
 try:
@@ -47,7 +49,7 @@ try:
     full_url = "http://ip-api.com/json"
     location = json.loads(urllib2.urlopen(full_url).read().decode())
     city = location["city"].encode()
-    latitude  = str(location["lat"]) 
+    latitude = str(location["lat"])
     longitude = str(location["lon"])
 
     # Get weather information at this location
@@ -59,9 +61,9 @@ except:
     recognizer.say("There was a problem. I could not access internet")
 
 recognizer.say("Weather station starting")
-    
+
 ############################################
-### Main Loop - run over and over
+# Main Loop - run over and over
 ############################################
 while True:
     res = recognizer.poll()
@@ -72,14 +74,16 @@ while True:
         try:
             # Get hourly forecast
             full_url = weather["properties"]["forecastHourly"]
-            forecast_hourly = json.loads(urllib2.urlopen(full_url).read().decode())
+            forecast_hourly = json.loads(
+                urllib2.urlopen(full_url).read().decode())
             current_temp = forecast_hourly["properties"]["periods"][0]['temperature']
 
         except:
             sys.exit('Could not access weather server at ' + full_url)
             recognizer.say("There was a problem. I could not access internet")
 
-        response = "the outside temperature in " + city.encode() + " is " + str(current_temp).encode() + " degrees"
+        response = "the outside temperature in " + \
+            city.encode() + " is " + str(current_temp).encode() + " degrees"
         print(response)
         recognizer.say(response)
 
@@ -97,7 +101,8 @@ while True:
             sys.exit('Could not access weather server at ' + full_url)
             recognizer.say("There was a problem. I could not access internet")
 
-        response = str(current_weather).replace(" mph."," miles per hour").encode()
+        response = str(current_weather).replace(
+            " mph.", " miles per hour").encode()
         print(response)
         recognizer.say(response)
 

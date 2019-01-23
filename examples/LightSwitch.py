@@ -1,5 +1,5 @@
 #********************************************************************
-# This is an example of the use of the Raspberry Pi library for MOVI 
+# This is an example of the use of the Raspberry Pi library for MOVI
 # ----> http://www.audeme.com/MOVI/
 # This code is inspired and maintained by Audeme but open to change
 # and organic development on GITHUB:
@@ -10,9 +10,9 @@
 #********************************************************************
 
 #
-# This basic example shows how to use MOVI(tm)'s API to train the call 
+# This basic example shows how to use MOVI(tm)'s API to train the call
 # sign "Raspberry" and two sentences. When the sentences are recognized
-# they switch on and off an LED on PIN D13. Many boards have a hardwired 
+# they switch on and off an LED on PIN D13. Many boards have a hardwired
 # LED on board already connected to D13.
 #
 # Circuitry:
@@ -20,7 +20,7 @@
 # Works on Raspberry PI
 # Connect speaker to MOVI.
 # IMPORTANT: Use a power supply that's at least 2A for the Raspberry Pi
-# 
+#
 
 # Note: MOVI uses GPIO pins 14 (TXD0) and 15 (RXD0)
 
@@ -29,18 +29,18 @@ import time
 from MOVI import *
 
 ############################################
-### Setup GPIO Pin 13 as Ouput to control LED
+# Setup GPIO Pin 13 as Ouput to control LED
 ############################################
 iopin = 13
 GPIO.setmode(GPIO.BOARD)
-GPIO.setup(iopin,GPIO.OUT)
-GPIO.output(iopin,True)
+GPIO.setup(iopin, GPIO.OUT)
+GPIO.output(iopin, True)
 time.sleep(1)
-GPIO.output(iopin,False)
+GPIO.output(iopin, False)
 time.sleep(1)
 
 ############################################
-### Setup MOVI
+# Setup MOVI
 ############################################
 
 recognizer = MOVI()
@@ -52,10 +52,10 @@ recognizer.addSentence("Go dark")                   # Sentence #2
 recognizer.train()
 
 # Uncomment and set to a higher value if you have a noisy environment
-# recognizer.setThreshhold(5)   
+# recognizer.setThreshhold(5)
 
 ############################################
-### Main Loop - run over and over
+# Main Loop - run over and over
 ############################################
 while True:
     res = recognizer.poll()
