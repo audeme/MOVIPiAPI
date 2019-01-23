@@ -78,8 +78,7 @@ class MOVI():
             time.sleep(0.1)
 
         while True:
-            # self.__ser.write("INIT\n")
-            self.sendCommand("INIT")
+            self.__ser.write(self.__makeCommand("INIT"))
             time.sleep(0.1)
             response = self.getShieldResponse()
             if response.find('@') > -1:
@@ -145,7 +144,7 @@ class MOVI():
     def __sendCommand(self, command):
         if (self.__firstsentence or self.__intraining):
             # Use controlled sendCommand
-            return(__sendctrldCommand(command, "]"))
+            return(self.__sendctrldCommand(command, "]"))
         # TODO - Implement firstsentence OR intraining cases
         self.__ser.write(self.__makeCommand(command))
         return(self.getShieldResponse())
@@ -173,8 +172,8 @@ class MOVI():
             return(True)
         if self.__shieldinit == 0:
             self.init()
-        # self.__ser.write("PING\n")
-        if "PONG" in self.sendCommand("PING"):
+        self.__ser.write(self.__makeCommand("PING"))
+        if "PONG" in self.getShieldResponse():
             self.__shieldinit = 100
             return(True)
         self.__shieldinit = 1
