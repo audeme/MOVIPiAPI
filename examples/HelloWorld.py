@@ -1,5 +1,5 @@
 #********************************************************************
-# This is an example of the use of the Raspberry Pi library for MOVI 
+# This is an example of the use of the Raspberry Pi library for MOVI
 # ----> http://www.audeme.com/MOVI/
 # This code is inspired and maintained by Audeme but open to change
 # and organic development on GITHUB:
@@ -9,7 +9,7 @@
 # BSD license, all text above must be included in any redistribution.
 #********************************************************************
 
-from MOVI import *
+from movi import MOVI
 
 mymovi = MOVI()
 mymovi.init(serialport='/dev/serial0')
@@ -23,7 +23,7 @@ mymovi.addSentence("Let there be light")
 mymovi.addSentence("Goodnight")
 mymovi.callSign("Arduino2")
 mymovi.train()
-if mymovi.isReady() == True :
+if mymovi.isReady() == True:
     mymovi.say("MOVI is Ready")
 else:
     mymovi.say("MOVI not Ready")
