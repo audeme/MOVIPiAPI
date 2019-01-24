@@ -8,7 +8,7 @@ def read(fname):
 
 setup(
     name='movi',
-    version='1.5',
+    version='0.5',
     description='Raspberry Pi API for MOVI Speech to Text.',
     long_description=read('README.md'),
     long_description_content_type='text/markdown',

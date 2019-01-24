@@ -1,12 +1,6 @@
 # MOVIPiAPI
 This is the official repository of the Raspberry Pi API for MOVI. For more information check out http://www.audeme.com/MOVI
 
-# Version History
- * VERSION 0.1 initial version.
- * VERSION 0.2 various fixes.
- * VERSION 0.3 more fixes
- * VERSION 0.4 more fixes and a couple Python examples derived from Arduino examples
-
 ## Getting MOVI to work on a Raspberry PI 3 or Pi ZeroW
 1. Connect MOVI onto Raspberry Pi using adapter the Adapter sold by
 Audeme or the wiring scheme in this
@@ -51,3 +45,10 @@ error should be used.
 1. Browse through the examples directory and play around with them.
 All examples assume `/dev/serial0`. You may have to modify them if
 that's not your device file.
+
+## Version History
+ * 0.1 initial version.
+ * 0.2 various fixes.
+ * 0.3 more fixes
+ * 0.4 more fixes and a couple Python examples derived from Arduino examples
+ * 0.5 python3, flake8, and `setup.py` added.
