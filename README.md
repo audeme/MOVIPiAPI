@@ -1,5 +1,7 @@
 # MOVIPiAPI
-This is the official repository of the Raspberry Pi API for MOVI. For more information check out http://www.audeme.com/MOVI
+
+This is the official repository of the Raspberry Pi API for MOVI. For
+more information check out http://www.audeme.com/MOVI
 
 ## Getting MOVI to work on a Raspberry PI 3 or Pi ZeroW
 1. Connect MOVI onto Raspberry Pi using adapter the Adapter sold by
@@ -31,7 +33,8 @@ or `/dev/serial1` give an input/output error. The easiest way to find
 out is to do an: ``` stty -a -F <devicefile> ``` where devicefile is
 one of `/dev/ttyAMA0`, `/dev/serial0`, `/dev/ttyS0`, or
 `/dev/serial1`. The one with the lowest number that doesn't return an
-error should be used.
+error should be used. For example if `/dev/ttyAMA0` and `/dev/serial1`
+both work, try using `/dev/ttyAMA0` first.
 1. You'll need setuptools for the installation.
    ```
    sudo apt-get install python3-setuptools
