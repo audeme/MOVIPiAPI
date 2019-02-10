@@ -14,20 +14,27 @@ from movi import MOVI
 mymovi = MOVI()
 mymovi.init(serialport='/dev/serial0')
 
+print("Found MOVI board:")
 print("     API Version: " + str(mymovi.getAPIVersion()))
 print("Firmware Version: " + str(mymovi.getFirmwareVersion()))
 print("Hardware Version: " + str(mymovi.getHardwareVersion()))
 
-mymovi.addSentence("Hello New World")
-mymovi.addSentence("Let there be light")
-mymovi.addSentence("Goodnight")
-mymovi.callSign("Arduino2")
+print("Training callsign")
+mymovi.callSign("Raspberry")
+
+print("Training sentences:")
+mymovi.addSentence("Hello")
+print("1) Hello")
+mymovi.addSentence("Good night")
+print("2) Good night")
 mymovi.train()
-if mymovi.isReady() == True:
-    mymovi.say("MOVI is Ready")
-else:
-    mymovi.say("MOVI not Ready")
+mymovi.say("Call me with Raspberry and wait for beep. Then speak sentence.") 
 while True:
     res = mymovi.poll()
-    if res != 0:
+    if res!=0:
         print(mymovi.getResponse())
+    if res==1:
+	mymovi.say("World!")
+    if res==2:
+	mymovi.say("Bye Bye")
+	
