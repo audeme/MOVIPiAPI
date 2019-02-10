@@ -35,8 +35,8 @@ recognizer = MOVI()
 recognizer.init(serialport='/dev/serial0')
 
 recognizer.callSign("Weatherstation")
-recognizer.addSentence("What's the temperature ?")        # Sentence #1
-recognizer.addSentence("What's the forecast?")        # Sentence #2
+recognizer.addSentence("What is the temperature?")     # Sentence #1
+recognizer.addSentence("What is the forecast?")        # Sentence #2
 recognizer.addSentence("do nothing")                   # Sentence #3
 recognizer.train()
 
