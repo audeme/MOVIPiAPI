@@ -52,7 +52,7 @@ recognizer.addSentence("Go dark")                   # Sentence #2
 recognizer.train()
 
 # Uncomment and set to a higher value if you have a noisy environment
-# recognizer.setThreshhold(5)
+# recognizer.setThreshold(5)
 
 ############################################
 # Main Loop - run over and over
