@@ -201,7 +201,7 @@ class MOVI():
         self.sendCommand("FINISH")
 
     def play(self, filename):
-        self.sendCommand("SAY " + filename)
+        self.sendCommand("PLAY " + filename)
 
     def abort(self):
         self.sendCommand("ABORT")
