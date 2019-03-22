@@ -8,7 +8,7 @@ def read(fname):
 
 setup(
     name='movi',
-    version='0.5.1',
+    version='0.5.2',
     description='Raspberry Pi API for MOVI Voice Dialog Shield.',
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
