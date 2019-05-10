@@ -1,4 +1,4 @@
-#********************************************************************
+# ********************************************************************
 # This is an example of the use of the Raspberry Pi library for MOVI
 # ----> http://www.audeme.com/MOVI/
 # This code is inspired and maintained by Audeme but open to change
@@ -7,7 +7,7 @@
 # Written by Bertrand Irissou and Gerald Friedland for Audeme LLC.
 # Contact: fractor@audeme.com
 # BSD license, all text above must be included in any redistribution.
-#********************************************************************
+# ********************************************************************
 
 #
 # This basic example shows how to use MOVI(tm)'s API to train the call
@@ -32,7 +32,7 @@ KEYWORD = "computer"
 ############################################
 
 recognizer = MOVI()
-recognizer.init(serialport='/dev/serial0')
+recognizer.init(serialport="/dev/serial0")
 
 recognizer.addSentence(KEYWORD)
 
@@ -56,9 +56,9 @@ recognizer.addSentence("if about who get which go me")
 recognizer.train()
 
 
-recognizer.welcomeMessage(False)    # silence MOVI's welcome message
-recognizer.responses(False)         # silence MOVI's responses
-recognizer.beeps(False)            # silence MOVI's beeps
+recognizer.welcomeMessage(False)  # silence MOVI's welcome message
+recognizer.responses(False)  # silence MOVI's responses
+recognizer.beeps(False)  # silence MOVI's beeps
 # Uncomment and set to a higher value if you have a noisy environment
 # recognizer.setThreshhold(5)
 
@@ -82,7 +82,7 @@ while True:
     if res == RAW_WORDS:
         # if the raw result string contains the (uppercase) keyword
         # string: bingo!
-        if (KEYWORD in recognizer.getResult()):
+        if KEYWORD in recognizer.getResult():
             # say keyword has been spotted and listen again
             recognizer.ask("keyword spotted")
         else:

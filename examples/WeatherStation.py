@@ -1,6 +1,6 @@
-#! /usr/bin/env python2
+#! /usr/bin/env python3
 
-#********************************************************************
+# ********************************************************************
 # This is an example of the use of the Raspberry Pi library for MOVI
 # ----> http://www.audeme.com/MOVI/
 # This code is inspired and maintained by Audeme but open to change
@@ -9,7 +9,7 @@
 # Written by Bertrand Irissou and Gerald Friedland for Audeme LLC.
 # Contact: fractor@audeme.com
 # BSD license, all text above must be included in any redistribution.
-#********************************************************************
+# ********************************************************************
 
 #
 # This basic example shows how to use MOVI(tm)'s API to build a basic
@@ -23,7 +23,7 @@
 #
 
 from movi import MOVI
-import urllib2
+from urllib.request import urlopen
 import json
 import sys
 
@@ -32,12 +32,12 @@ import sys
 ############################################
 
 recognizer = MOVI()
-recognizer.init(serialport='/dev/serial0')
+recognizer.init(serialport="/dev/serial0")
 
 recognizer.callSign("Weatherstation")
-recognizer.addSentence("What is the temperature?")     # Sentence #1
-recognizer.addSentence("What is the forecast?")        # Sentence #2
-recognizer.addSentence("do nothing")                   # Sentence #3
+recognizer.addSentence("What is the temperature?")  # Sentence #1
+recognizer.addSentence("What is the forecast?")  # Sentence #2
+recognizer.addSentence("do nothing")  # Sentence #3
 recognizer.train()
 
 # Uncomment and set to a higher value if you have a noisy environment
@@ -47,20 +47,20 @@ recognizer.train()
 try:
     # Automatically detect location based on geoIP
     full_url = "http://ip-api.com/json"
-    location = json.loads(urllib2.urlopen(full_url).read().decode())
-    city = location["city"].encode()
+    location = json.loads(urlopen(full_url).read().decode())
+    city = str(location["city"])
     latitude = str(location["lat"])
     longitude = str(location["lon"])
 
     # Get weather information at this location
     full_url = "https://api.weather.gov/points/" + latitude + "," + longitude
-    weather = json.loads(urllib2.urlopen(full_url).read().decode())
+    weather = json.loads(urlopen(full_url).read().decode())
 
 except:
-    sys.exit('Could not access server at ' + full_url)
+    sys.exit("Could not access server at " + full_url)
     recognizer.say("There was a problem. I could not access internet")
 
-recognizer.say("Weather station starting")
+recognizer.say("Weather station starting. Current location is %s" % city)
 
 ############################################
 # Main Loop - run over and over
@@ -74,16 +74,20 @@ while True:
         try:
             # Get hourly forecast
             full_url = weather["properties"]["forecastHourly"]
-            forecast_hourly = json.loads(
-                urllib2.urlopen(full_url).read().decode())
-            current_temp = forecast_hourly["properties"]["periods"][0]['temperature']
+            forecast_hourly = json.loads(urlopen(full_url).read().decode())
+            current_temp = str(forecast_hourly["properties"]["periods"][0]["temperature"])
 
         except:
-            sys.exit('Could not access weather server at ' + full_url)
+            sys.exit("Could not access weather server at " + full_url)
             recognizer.say("There was a problem. I could not access internet")
 
-        response = "the outside temperature in " + \
-            city.encode() + " is " + str(current_temp).encode() + " degrees"
+        response = (
+            "the outside temperature in "
+            + city
+            + " is "
+            + current_temp
+            + " degrees"
+        )
         print(response)
         recognizer.say(response)
 
@@ -93,16 +97,14 @@ while True:
         try:
             # Get detailed forecast
             full_url = weather["properties"]["forecast"]
-            forecast = json.loads(urllib2.urlopen(full_url).read().decode())
-            current_weather = forecast["properties"]["periods"][0]['detailedForecast']
-            # current_weather = forecast["properties"]["periods"][0]['shortForecast']
+            forecast = json.loads(urlopen(full_url).read().decode())
+            current_weather = str(forecast["properties"]["periods"][0]["detailedForecast"])
 
         except:
-            sys.exit('Could not access weather server at ' + full_url)
+            sys.exit("Could not access weather server at " + full_url)
             recognizer.say("There was a problem. I could not access internet")
 
-        response = str(current_weather).replace(
-            " mph.", " miles per hour").encode()
+        response = current_weather.replace(" mph.", " miles per hour")
         print(response)
         recognizer.say(response)
 

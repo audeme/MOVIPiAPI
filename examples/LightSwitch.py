@@ -1,4 +1,4 @@
-#********************************************************************
+# ********************************************************************
 # This is an example of the use of the Raspberry Pi library for MOVI
 # ----> http://www.audeme.com/MOVI/
 # This code is inspired and maintained by Audeme but open to change
@@ -7,7 +7,7 @@
 # Written by Bertrand Irissou and Gerald Friedland for Audeme LLC.
 # Contact: fractor@audeme.com
 # BSD license, all text above must be included in any redistribution.
-#********************************************************************
+# ********************************************************************
 
 #
 # This basic example shows how to use MOVI(tm)'s API to train the call
@@ -44,11 +44,11 @@ time.sleep(1)
 ############################################
 
 recognizer = MOVI()
-recognizer.init(serialport='/dev/serial0')
+recognizer.init(serialport="/dev/serial0")
 
 recognizer.callSign("Raspberry")
-recognizer.addSentence("Let there be light")        # Sentence #1
-recognizer.addSentence("Go dark")                   # Sentence #2
+recognizer.addSentence("Let there be light")  # Sentence #1
+recognizer.addSentence("Go dark")  # Sentence #2
 recognizer.train()
 
 # Uncomment and set to a higher value if you have a noisy environment
@@ -60,9 +60,9 @@ recognizer.train()
 while True:
     res = recognizer.poll()
 
-    if res == 1:                    # Sentence #1
+    if res == 1:  # Sentence #1
         GPIO.output(iopin, True)
         recognizer.say("and there was light!")
-    if res == 2:                    # Sentence #2
+    if res == 2:  # Sentence #2
         GPIO.output(iopin, False)
         recognizer.say("Goodnight")
