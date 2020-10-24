@@ -278,6 +278,7 @@ class MOVI():
     def train(self):
         if (self.__intraining == False):
             return(False)
-        self.sendCommand("TRAINSENTENCES", "trained")
-        self.__intraining = False
-        return (True)
+        if self.sendCommand("TRAINSENTENCES", "trained"):
+            self.__intraining = False
+            return (True)
+        else return(False)
